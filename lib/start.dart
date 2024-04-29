@@ -35,8 +35,8 @@ class StartScreen extends StatelessWidget {
                 ClipOval(
                   child: Container(
                     color: Colors.green,
-                    height: 300.0, // Increased size
-                    width: 300.0, // Increased size
+                    height: 200.0, // Increased size
+                    width: 200.0, // Increased size
                     child: Center(
                       child: Icon(
                         Icons.delete_outline,

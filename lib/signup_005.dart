@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Greenscan',
       theme: ThemeData(
-// primarySwatch: const Color.fromRGBO(76, 175, 80, 1),
+        primaryColor: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: RegistrationScreen(),
@@ -23,7 +23,31 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  bool hasReferralCode = false;
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _retypePasswordController =
+      TextEditingController();
+  bool passwordsMatch = true;
+  bool hasReferralCode = false; // 여기에 변수를 정의해줍니다.
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _retypePasswordController.dispose();
+    super.dispose();
+  }
+
+  void checkPasswordsMatch() {
+    if (_passwordController.text != _retypePasswordController.text) {
+      setState(() {
+        passwordsMatch = false;
+      });
+    } else {
+      setState(() {
+        passwordsMatch = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +64,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           SizedBox(height: 40),
           Center(
             child: Text(
-              'Welcome to Greenscan !!!',
+              'Welcome to GreenScan !!!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
@@ -52,7 +76,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           Center(
             child: GestureDetector(
               onTap: () {
-// Navigate to the login screen
+                // Navigate to the login screen
               },
               child: Text(
                 'Already have an account? Sign in',
@@ -75,13 +99,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             visible: !hasReferralCode,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[850], // Register 버튼과 동일한 배경색
-                foregroundColor: Colors.grey[200], // 흰색 글씨색
+                backgroundColor: Colors.grey[850],
+                foregroundColor: Colors.grey[200],
               ),
               onPressed: () {
-// 추천인 코드가 없을 때의 로직
+                setState(() {
+                  hasReferralCode = !hasReferralCode; // 상태 업데이트 로직 추가
+                });
               },
-              child: Text('No Recommender'),
+              child: Text(hasReferralCode ? 'Change Code' : 'No Recommender'),
             ),
           ),
         ),
@@ -95,19 +121,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
       SizedBox(height: 16),
       TextField(
+        controller: _passwordController,
         obscureText: true,
         decoration: InputDecoration(
           labelText: 'Password',
           border: OutlineInputBorder(),
         ),
+        onChanged: (value) {
+          checkPasswordsMatch();
+        },
       ),
       SizedBox(height: 16),
       TextField(
+        controller: _retypePasswordController,
         obscureText: true,
         decoration: InputDecoration(
           labelText: 'Re-type Password',
-          border: OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: !passwordsMatch ? Colors.red : Colors.grey),
+          ),
+          errorText:
+              !passwordsMatch ? 'Passwords do not match.. Try Again!' : null,
         ),
+        onChanged: (value) {
+          checkPasswordsMatch();
+        },
       ),
       SizedBox(height: 16),
       TextField(
@@ -134,9 +173,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         foregroundColor: Colors.white,
       ),
       onPressed: () {
-// Registration logic
+        // Registration logic
+        checkPasswordsMatch();
       },
       child: Text('Register'),
     );
   }
 }
+

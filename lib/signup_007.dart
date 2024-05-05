@@ -7,9 +7,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GreenScan',
+      title: 'Greenscan',
       theme: ThemeData(
-        primaryColor: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: RegistrationScreen(),
@@ -23,28 +22,9 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  final TextEditingController _passwordController = TextEditingController();
-  bool hasReferralCode = false;
-  bool passwordIsValid = true;
-
-  void checkPasswordValidity(String password) {
-    bool hasUpperCase = password.contains(RegExp(r'[A-Z]'));
-    bool hasLowerCase = password.contains(RegExp(r'[a-z]'));
-    bool hasDigit = password.contains(RegExp(r'\d'));
-    bool hasSpecialCharacter =
-        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-
-    setState(() {
-      passwordIsValid =
-          hasUpperCase && hasLowerCase && hasDigit && hasSpecialCharacter;
-    });
-  }
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    super.dispose();
-  }
+  final TextEditingController _recommenderController = TextEditingController();
+  bool _hasReferralCode = false;
+  String? _recommenderErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -89,27 +69,35 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   List<Widget> _buildTextFields() {
     return [
-      TextField(
+      TextFormField(
+        controller: _recommenderController,
         decoration: InputDecoration(
           labelText: 'Recommender Code',
           border: OutlineInputBorder(),
+          errorText: _recommenderErrorText,
           suffixIcon: Visibility(
-            visible: !hasReferralCode,
+            visible: !_hasReferralCode,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[850],
                 foregroundColor: Colors.grey[200],
               ),
               onPressed: () {
-                setState(() {
-                  hasReferralCode = !hasReferralCode;
-                });
+                // Additional button logic
               },
-              child: Text(hasReferralCode ? 'Change Code' : 'No Recommender'),
+              child: Text('No Recommender'),
             ),
           ),
         ),
+        onChanged: (value) {
+          setState(() {
+            _recommenderErrorText = _validateRecommenderCode(value)
+                ? null
+                : "The recommender ID is incorrect. Try Again!";
+          });
+        },
       ),
+      // Other text fields...
       SizedBox(height: 16),
       TextField(
         decoration: InputDecoration(
@@ -119,23 +107,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
       SizedBox(height: 16),
       TextField(
-        controller: _passwordController,
         obscureText: true,
         decoration: InputDecoration(
           labelText: 'Password',
           border: OutlineInputBorder(),
-          suffixIcon: !passwordIsValid
-              ? ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Danger color
-                    foregroundColor: Colors.white, // Text color
-                  ),
-                  onPressed: () {}, // To disable the button's functionality
-                  child: Text('Danger'),
-                )
-              : null,
         ),
-        onChanged: checkPasswordValidity,
       ),
       SizedBox(height: 16),
       TextField(
@@ -162,17 +138,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
     ];
   }
+}
 
-  Widget _buildRegisterButton(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-      ),
-      onPressed: () {
-        // Registration logic
-      },
-      child: Text('Register'),
-    );
-  }
+bool _validateRecommenderCode(String code) {
+  return code.length >= 10; // Example validation logic
+}
+
+Widget _buildRegisterButton(BuildContext context) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.green,
+      foregroundColor: Colors.white,
+    ),
+    onPressed: () {
+      // Registration logic
+    },
+    child: Text('Register'),
+  );
 }

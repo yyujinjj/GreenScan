@@ -7,7 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Greenscan',
+      title: 'GreenScan',
       theme: ThemeData(
         primaryColor: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -161,4 +161,3 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 }
-

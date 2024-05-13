@@ -113,22 +113,45 @@ class CategorySelectionScreen extends StatelessWidget {
         title: Text('Please Select an Item'),
         backgroundColor: Colors.green,
       ),
-      body: ListView.builder(
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(categories[index].name),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      WasteDisposalScreen(category: categories[index]),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(categories[index].name),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            WasteDisposalScreen(category: categories[index]),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.maybePop(context);
+                },
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                label: Text('Go back', style: TextStyle(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey, // Button color
+                  elevation: 0, // Removes shadow
                 ),
-              );
-            },
-          );
-        },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

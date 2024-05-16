@@ -32,12 +32,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _idErrorMessage;
-  String? _passwordErrorMessage;
+  String? _errorMessage;
 
   Future<void> login() async {
-    // 로컬 네트워크 IP 주소와 Spring Boot 서버의 포트 번호 사용
-    final url = Uri.parse('http://172.27.96.1:8080/api/user/login');
+    final url = Uri.parse('http://192.168.56.1:8080/api/user/login'); // Update with your server's IP
     try {
       final response = await http.post(
         url,
@@ -49,8 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       setState(() {
-        _idErrorMessage = null;
-        _passwordErrorMessage = null;
+        _errorMessage = null;
       });
 
       if (response.statusCode == 200) {
@@ -58,19 +55,15 @@ class _LoginScreenState extends State<LoginScreen> {
         final token = response.headers['authorization'];
         // TODO: 토큰 저장 및 사용
       } else {
-        final responseBody = jsonDecode(response.body);
         setState(() {
-          if (responseBody == 'ID does not exist') {
-            _idErrorMessage = 'ID does not exist.';
-          } else if (responseBody == 'Passwords do not match') {
-            _passwordErrorMessage = 'Passwords do not match. Try Again!';
-          } else {
-            _idErrorMessage = '로그인 실패: ${response.body}';
-          }
+          _errorMessage = '로그인 실패: ${response.body}';
         });
         print('로그인 실패: ${response.body}');
       }
     } catch (e) {
+      setState(() {
+        _errorMessage = '네트워크 요청 중 오류 발생: $e';
+      });
       print('네트워크 요청 중 오류 발생: $e');
     }
   }
@@ -103,7 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderSide: const BorderSide(color: Colors.blue), // 파란색 테두리
                   ),
                   labelText: 'ID',
-                  errorText: _idErrorMessage,
                 ),
               ),
               const SizedBox(height: 24.0),
@@ -117,9 +109,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   labelText: 'Password',
                   suffixIcon: const Icon(Icons.error_outline, color: Colors.red,), // 에러 아이콘
-                  errorText: _passwordErrorMessage,
                 ),
               ),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(color: Colors.red, fontSize: 14.0),
+                  ),
+                ),
               const SizedBox(height: 48.0),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -137,8 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
               TextButton(
                 onPressed: () {},
                 child: RichText(
-                  text: const TextSpan(
-                    children: [
+                  text: TextSpan(
+                    children: const [
                       TextSpan(
                         text: 'You don\'t have an account? Click ',
                         style: TextStyle(color: Colors.grey), // 회색 텍스트

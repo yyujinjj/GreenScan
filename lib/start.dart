@@ -38,10 +38,8 @@ class StartScreen extends StatelessWidget {
                     height: 200.0, // Increased size
                     width: 200.0, // Increased size
                     child: Center(
-                      child: Icon(
-                        Icons.delete_outline,
-                        size: 100.0, // Adjusted icon size
-                        color: Colors.white,
+                      child: Image.asset(
+                        'asset/img/startlogo.png'
                       ),
                     ),
                   ),

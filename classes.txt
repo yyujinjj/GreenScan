@@ -1,9 +1,0 @@
-battery
-can
-fluorescentlamp
-metal
-plastic
-paper
-styrofoam
-trash
-vinyl

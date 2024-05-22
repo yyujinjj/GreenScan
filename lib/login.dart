@@ -1,3 +1,5 @@
+import 'package:cap/mainscreen.dart';
+import 'package:cap/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -53,6 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         print('로그인 성공');
+        if (response.body == "로그인 성공") {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        }
         final token = response.headers['authorization'];
         // TODO: 토큰 저장 및 사용
       } else {
@@ -139,7 +145,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegistrationScreen()));
+                },
                 child: RichText(
                   text: TextSpan(
                     children: const [

@@ -1,3 +1,4 @@
+import 'package:cap/login.dart';
 import 'package:flutter/material.dart';
 import 'package:cap/cat_battery.dart' as battery_cat;
 import 'package:cap/cat_etc.dart' as etc_cat;
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Separate the Trash',
-      home: const HomeScreen(),
+      home: const LoginScreen(),
       routes: {
         '/waste': (context) => waste_cat.WasteScreen(),
         '/plastic': (context) => plastic_cat.PlasticScreen(),

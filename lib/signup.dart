@@ -1,3 +1,4 @@
+import 'package:cap/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -69,6 +70,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       print(response.statusCode);
       if (response.statusCode == 200) {
         print(response.body);
+        if (jsonDecode(response.body)["userEmail"].toString().isNotEmpty) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Reason: ${response.body}');
@@ -136,6 +141,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _buildTextField('Phone Number',
               controller: _phoneNumberController, isPhone: true),
           _buildRegisterButton(),
+          SizedBox(height: 20),
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+              child: Text(
+                'Already have an account? Sign in',
+                style: TextStyle(decoration: TextDecoration.underline),
+              ),
+            ),
+          ),
         ],
       ),
     );

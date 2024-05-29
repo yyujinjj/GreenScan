@@ -63,7 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     try {
       var response = await http.post(
-          Uri.parse('http://192.168.0.76:8090/api/user/signup'),
+          Uri.parse('http://192.168.0.185:8090/api/user/signup'),
           headers: headers,
           body: jsonEncode(body));
 
@@ -149,7 +149,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     MaterialPageRoute(builder: (context) => LoginScreen()));
               },
               child: Text(
-                'Already have an account? Sign in',
+                'Already have an account? Log in',
                 style: TextStyle(decoration: TextDecoration.underline),
               ),
             ),

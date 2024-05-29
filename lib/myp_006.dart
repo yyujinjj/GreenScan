@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -32,6 +34,27 @@ class _EditPersonalInformationScreenState
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
+  Future<void> updatePersonalInformation() async {
+    final url = Uri.parse('https://your-backend-api.com/update'); // 백엔드 API URL
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      'password': passwordController.text,
+      'name': nameController.text,
+      'phone': phoneController.text,
+      'email': emailController.text,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Information updated successfully!')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update information.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,10 +83,8 @@ class _EditPersonalInformationScreenState
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      // Validation success
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Information updated successfully!')));
+                    if (_formKey.currentState?.validate() ?? false) {
+                      updatePersonalInformation();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -101,7 +122,7 @@ class _EditPersonalInformationScreenState
         ),
         obscureText: isPassword,
         validator: (value) {
-          if (value.isEmpty) {
+          if (value == null || value.isEmpty) {
             return '$label cannot be empty';
           }
           return null;

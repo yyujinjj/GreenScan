@@ -11,6 +11,7 @@ import 'package:cap/cat_plastic.dart' as plastic_cat;
 import 'package:cap/cat_plasticwaste.dart' as plasticwaste_cat;
 import 'package:cap/cat_styrofoam.dart' as styrofoam_cat;
 import 'package:cap/cat_waste.dart' as waste_cat;
+import 'package:cap/was.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
         '/battery': (context) => battery_cat.BatteryScreen(),
         '/etc': (context) => etc_cat.EtcScreen(),
         '/mypage': (context) =>
-            MyPage() // 이 부분에 대한 import가 누락되었으므로 해당 파일을 확인해야 합니다.
+            MyPage(), // 이 부분에 대한 import가 누락되었으므로 해당 파일을 확인해야 합니다.
+        '/largeWaste': (context) => CategorySelectionScreen(),
       },
     );
   }
@@ -152,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                   backgroundColor: Colors.lightGreen,
                   minimumSize: const Size(420, 50),
                 ),
-                onPressed: () {},
+                onPressed: () => Navigator.pushNamed(context, '/largeWaste'),
                 child: const Text('LARGE WASTE'),
               ),
               const SizedBox(height: 10),

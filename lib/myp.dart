@@ -332,7 +332,7 @@ class _EditPersonalInformationScreenState
     };
     final body = jsonEncode({
       'password': passwordController.text,
-      'name': nameController.text,
+      'username': nameController.text,
       'phoneNumber': phoneController.text,
     });
 

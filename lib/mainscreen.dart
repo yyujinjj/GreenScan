@@ -4,7 +4,7 @@ import 'package:cap/cat_battery.dart' as battery_cat;
 import 'package:cap/cat_etc.dart' as etc_cat;
 import 'package:cap/cat_lamp.dart' as lamp_cat;
 import 'package:cap/cat_metal.dart' as metal_cat;
-import 'package:cap/moch.dart';
+import 'package:cap/moch.dart' as moch; // as 키워드를 사용하여 prefix 추가
 import 'package:cap/cat_can.dart' as can_cat;
 import 'package:cap/cat_paper.dart' as paper_cat;
 import 'package:cap/cat_plastic.dart' as plastic_cat;
@@ -12,6 +12,7 @@ import 'package:cap/cat_plasticwaste.dart' as plasticwaste_cat;
 import 'package:cap/cat_styrofoam.dart' as styrofoam_cat;
 import 'package:cap/cat_waste.dart' as waste_cat;
 import 'package:cap/was.dart';
+import 'package:cap/myp.dart' as myp; // as 키워드를 사용하여 prefix 추가
 
 void main() {
   runApp(const MyApp());
@@ -37,9 +38,10 @@ class MyApp extends StatelessWidget {
         '/lamp': (context) => lamp_cat.FluorescentLampScreen(),
         '/battery': (context) => battery_cat.BatteryScreen(),
         '/etc': (context) => etc_cat.EtcScreen(),
-        '/mypage': (context) =>
-            MyPage(), // 이 부분에 대한 import가 누락되었으므로 해당 파일을 확인해야 합니다.
+        '/mypage': (context) => myp.MyPage(), // 명확히 구분하여 사용
         '/largeWaste': (context) => CategorySelectionScreen(),
+        '/identityVerification': (context) =>
+            myp.IdentityVerificationScreen(), // 추가된 라우트
       },
     );
   }

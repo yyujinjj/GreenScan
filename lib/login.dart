@@ -1,9 +1,9 @@
 import 'package:cap/mainscreen.dart';
 import 'package:cap/signup.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart'; // 추가된 부분
 
 void main() {
   runApp(const MyApp());
@@ -55,12 +55,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         print('로그인 성공');
-        if (response.body == "로그인 성공") {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()));
-        }
         final token = response.headers['authorization'];
-        // TODO: 토큰 저장 및 사용
+
+        // 토큰 저장
+        if (token != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+        }
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } else {
         setState(() {
           _errorMessage = '로그인 실패: ${response.body}';

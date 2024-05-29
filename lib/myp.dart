@@ -1,23 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'My Page',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: MyPage(),
-    );
-  }
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPage extends StatelessWidget {
   @override
@@ -27,79 +11,121 @@ class MyPage extends StatelessWidget {
         title: Text('My Page'),
         backgroundColor: Colors.green,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Privacy',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ElevatedButton(
-                    onPressed: () {
-                      showEditDialog(context);
-                    },
-                    child: Text('Edit'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
+      body: FutureBuilder(
+        future: fetchUserInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return Center(child: Text('No user data found'));
+          } else {
+            final userData = snapshot.data as Map<String, dynamic>;
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Privacy',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, '/identityVerification');
+                          },
+                          child: Text('Edit'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              InfoField(label: 'Name', value: 'John Doe'),
-              InfoField(label: 'Phone Number', value: '123-456-7890'),
-              InfoField(label: 'Email', value: 'john.doe@example.com'),
-              SizedBox(height: 20),
-              Text('My Mileage',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              buildMileageInfo(),
-              SizedBox(height: 20),
-              Text('My Exchange Ticket',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.add, color: Colors.white),
-                label: Text('Add Mobile Exchange Ticket'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                    SizedBox(height: 10),
+                    InfoField(label: 'Name', value: userData['name'] ?? ''),
+                    InfoField(
+                        label: 'Phone Number',
+                        value: userData['phoneNumber'] ?? ''),
+                    InfoField(label: 'Email', value: userData['email'] ?? ''),
+                    SizedBox(height: 20),
+                    Text('My Mileage',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    buildMileageInfo(userData['mileageInfo'] ?? 0),
+                    SizedBox(height: 20),
+                    Text('My Exchange Ticket',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: Icon(Icons.add, color: Colors.white),
+                      label: Text('Add Mobile Exchange Ticket'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: ElevatedButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
+                        label: Text('Go back'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 40),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                  label: Text('Go back'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    foregroundColor: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget buildMileageInfo() {
+  Future<Map<String, dynamic>> fetchUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final url =
+        Uri.parse('http://192.168.0.185:8090/api/user/info'); // 백엔드 API URL
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': '$token', // Add token to headers
+    };
+
+    final response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
+
+  Widget buildMileageInfo(int mileage) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
@@ -110,7 +136,8 @@ class MyPage extends StatelessWidget {
         children: [
           Icon(Icons.star, color: Colors.yellowAccent),
           SizedBox(width: 10),
-          Text('10,000P', style: TextStyle(color: Colors.black, fontSize: 16)),
+          Text('$mileage P',
+              style: TextStyle(color: Colors.black, fontSize: 16)),
         ],
       ),
     );
@@ -145,37 +172,6 @@ class InfoField extends StatelessWidget {
   }
 }
 
-void showEditDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Would you like to edit your personal information?"),
-        actions: <Widget>[
-          TextButton(
-            child: Text("YES"),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              navigateToIdentityVerification(context);
-            },
-          ),
-          TextButton(
-            child: Text("NO"),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void navigateToIdentityVerification(BuildContext context) {
-  Navigator.push(context,
-      MaterialPageRoute(builder: (context) => IdentityVerificationScreen()));
-}
-
 class IdentityVerificationScreen extends StatefulWidget {
   @override
   _IdentityVerificationScreenState createState() =>
@@ -190,37 +186,32 @@ class _IdentityVerificationScreenState
   String errorMessage = '';
   bool get isLockedOut => attemptCount >= 5;
 
-  void _verifyIdentity() {
-    if (_idController.text == "correct_id" &&
-        _passwordController.text == "correct_password") {
-      // Navigate to another screen or handle success
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EditPersonalInformationScreen()));
-    } else {
-      if (!isLockedOut) {
+  Future<void> _verifyIdentity() async {
+    final url = Uri.parse('http://192.168.0.185:8090/api/user/login');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      'email': _idController.text,
+      'password': _passwordController.text,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EditPersonalInformationScreen()));
+      } else {
         setState(() {
           attemptCount++;
-          errorMessage = 'Personal information was entered Incorrect';
+          errorMessage = 'Verification failed: ${response.body}';
         });
       }
-    }
-
-    if (isLockedOut) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Authentication Failed'),
-          content: Text('You cannot authenticate yourself for 10 hours.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-      );
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Network error: $e';
+      });
     }
   }
 
@@ -265,6 +256,7 @@ class _IdentityVerificationScreenState
                     labelText: "Password",
                     border: OutlineInputBorder(),
                   ),
+                  obscureText: true,
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -285,7 +277,6 @@ class _IdentityVerificationScreenState
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // Reset error message and let user re-enter credentials
                           setState(() {
                             errorMessage = '';
                           });
@@ -324,16 +315,25 @@ class _EditPersonalInformationScreenState
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
 
   Future<void> updatePersonalInformation() async {
-    final url = Uri.parse('https://your-backend-api.com/update'); // 백엔드 API URL
-    final headers = {'Content-Type': 'application/json'};
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final url = Uri.parse(
+        'http://192.168.0.185:8090/api/user/update-profile'); // 백엔드 API URL
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': '$token', // Add token to headers
+    };
     final body = jsonEncode({
       'password': passwordController.text,
       'name': nameController.text,
-      'phone': phoneController.text,
-      'email': emailController.text,
+      'phoneNumber': phoneController.text,
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -367,9 +367,8 @@ class _EditPersonalInformationScreenState
                       fontWeight: FontWeight.bold,
                       color: Colors.green)),
               _buildTextField(passwordController, 'Password', true),
-              _buildTextField(nameController, 'Name', false),
+              _buildTextField(nameController, 'name', false),
               _buildTextField(phoneController, 'Phone Number', false),
-              _buildTextField(emailController, 'Email', false),
               SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerRight,

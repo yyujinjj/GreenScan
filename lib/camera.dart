@@ -93,13 +93,6 @@ class _CameraExampleState extends State<CameraExample> {
               child: Text('Take Image'),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _uploadImage();
-              },
-              child: Text('Upload Image'),
-            ),
-            SizedBox(height: 20),
             _labels == null
                 ? Text('No results.')
                 : Column(

@@ -13,6 +13,7 @@ import 'package:cap/cat_styrofoam.dart' as styrofoam_cat;
 import 'package:cap/cat_waste.dart' as waste_cat;
 import 'package:cap/was.dart';
 import 'package:cap/myp.dart' as myp; // as 키워드를 사용하여 prefix 추가
+import 'package:cap/camera.dart' as camera;
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'Separate the Trash',
       home: const LoginScreen(),
       routes: {
+        '/camera': (context) => camera.CameraExample(),
         '/waste': (context) => waste_cat.WasteScreen(),
         '/plastic': (context) => plastic_cat.PlasticScreen(),
         '/plastic waste': (context) => plasticwaste_cat.PlasticWasteScreen(),
@@ -40,6 +42,8 @@ class MyApp extends StatelessWidget {
         '/etc': (context) => etc_cat.EtcScreen(),
         '/mypage': (context) => myp.MyPage(), // 명확히 구분하여 사용
         '/largeWaste': (context) => CategorySelectionScreen(),
+        '/addMobileExchangeTicket': (context) =>
+            moch.AddMobileExchangeTicketPage(),
         '/identityVerification': (context) =>
             myp.IdentityVerificationScreen(), // 추가된 라우트
       },
@@ -52,6 +56,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final iconSize = screenWidth * 0.3;
+    final buttonWidth = screenWidth * 0.9;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -66,7 +74,7 @@ class HomeScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Colors.lightGreen,
-              minimumSize: const Size(420, 50),
+              minimumSize: Size(buttonWidth, 50),
             ),
             onPressed: () {
               Navigator.pushNamed(context, '/mypage');
@@ -77,23 +85,33 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                width: 200,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/camera');
+                },
+                child: Container(
+                  width: iconSize,
+                  height: iconSize * 0.35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Image.asset('assets/camera.png'),
                 ),
-                child: Image.asset('assets/camera.png'),
               ),
-              Container(
-                width: 200,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/unity');
+                },
+                child: Container(
+                  width: iconSize,
+                  height: iconSize * 0.35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Image.asset('assets/ruler.png'),
                 ),
-                child: Image.asset('assets/ruler.png'),
               ),
             ],
           ),
@@ -138,7 +156,9 @@ class HomeScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.asset('assets/Category$index.png',
-                                fit: BoxFit.contain, width: 140, height: 115),
+                                fit: BoxFit.contain,
+                                width: iconSize,
+                                height: iconSize * 0.8),
                           ),
                         ],
                       ),
@@ -154,7 +174,7 @@ class HomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.lightGreen,
-                  minimumSize: const Size(420, 50),
+                  minimumSize: Size(buttonWidth, 50),
                 ),
                 onPressed: () => Navigator.pushNamed(context, '/largeWaste'),
                 child: const Text('LARGE WASTE'),
@@ -164,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.lightGreen,
-                  minimumSize: const Size(420, 50),
+                  minimumSize: Size(buttonWidth, 50),
                 ),
                 onPressed: () {},
                 child: const Text('GAME'),

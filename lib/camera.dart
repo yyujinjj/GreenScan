@@ -1,108 +1,118 @@
-import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final cameras = await availableCameras();
-  final firstCamera = cameras.first;
-
-  runApp(
-    MaterialApp(
-      theme: ThemeData.dark(),
-      home: TakePictureScreen(
-        camera: firstCamera,
-      ),
-    ),
-  );
-}
-
-class TakePictureScreen extends StatefulWidget {
-  final CameraDescription camera;
-  const TakePictureScreen({Key? key, required this.camera}) : super(key: key);
-
-  @override
-  TakePictureScreenState createState() => TakePictureScreenState();
-}
-
-class TakePictureScreenState extends State<TakePictureScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
-    _initializeControllerFuture = _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Photo the Trash')),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'Please take a photo of the item you wish to separate',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Expanded(child: CameraPreview(_controller)),
-              ],
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try {
-            await _initializeControllerFuture;
-            final image = await _controller.takePicture();
-            if (!mounted) return;
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPictureScreen(imagePath: image.path),
-              ),
-            );
-          } catch (e) {
-            print(e);
-          }
-        },
-        child: Icon(Icons.camera_alt),
-        backgroundColor: Colors.black54,
-      ),
+    return MaterialApp(
+      home: CameraExample(),
     );
   }
 }
 
-class DisplayPictureScreen extends StatelessWidget {
-  final String imagePath;
-  const DisplayPictureScreen({Key? key, required this.imagePath})
-      : super(key: key);
+class CameraExample extends StatefulWidget {
+  const CameraExample({Key? key}) : super(key: key);
+
+  @override
+  _CameraExampleState createState() => _CameraExampleState();
+}
+
+class _CameraExampleState extends State<CameraExample> {
+  File? _image;
+  List<dynamic>? _labels;
+  List<dynamic>? _confidences;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    print('pick image');
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+        return;
+      }
+    });
+    _uploadImage();
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+    print('upload image');
+    final uri = Uri.parse('http://192.168.0.185:8090/api/user/uploadImage');
+    final request = http.MultipartRequest('POST', uri);
+
+    final file = await http.MultipartFile.fromPath(
+      'imageFile',
+      _image!.path,
+      contentType:
+          MediaType('image', 'jpeg'), // Add this line if not already present
+    );
+
+    request.files.add(file);
+
+    try {
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        print('Response body: ${responseBody}');
+        final Map<String, dynamic> responseData =
+            json.decode(responseBody.body);
+        setState(() {
+          _labels = responseData['labels'];
+          _confidences = responseData['confidences'];
+        });
+      } else {
+        print('Upload failed: ${responseBody.body}');
+      }
+    } catch (e) {
+      print('Error occurred while uploading image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Display the Picture')),
-      body: Image.file(File(imagePath)),
+      appBar: AppBar(
+        title: Text('Upload Image'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _image == null ? Text('No image selected.') : Image.file(_image!),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Take Image'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _uploadImage();
+              },
+              child: Text('Upload Image'),
+            ),
+            SizedBox(height: 20),
+            _labels == null
+                ? Text('No results.')
+                : Column(
+                    children: List.generate(_labels!.length, (index) {
+                      return Text(
+                        'Label: ${_labels![index]}, Confidence: ${_confidences![index]}',
+                        style: TextStyle(fontSize: 16),
+                      );
+                    }),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -65,7 +65,10 @@ class MyPage extends StatelessWidget {
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/addMobileExchangeTicket');
+                      },
                       icon: Icon(Icons.add, color: Colors.white),
                       label: Text('Add Mobile Exchange Ticket'),
                       style: ElevatedButton.styleFrom(
@@ -188,6 +191,7 @@ class _IdentityVerificationScreenState
 
   Future<void> _verifyIdentity() async {
     final url = Uri.parse('http://192.168.0.185:8090/api/user/login');
+
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
       'email': _idController.text,
@@ -326,6 +330,7 @@ class _EditPersonalInformationScreenState
 
     final url = Uri.parse(
         'http://192.168.0.185:8090/api/user/update-profile'); // 백엔드 API URL
+
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': '$token', // Add token to headers

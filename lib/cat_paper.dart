@@ -60,10 +60,6 @@ class PaperScreen extends StatelessWidget {
                     const Spacer(),
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: Image.asset(
-                        'assets/trash_paper.png', // Ensure the asset path is correct.
-                        width: MediaQuery.of(context).size.width * 0.2,
-                      ),
                     ),
                   ],
                 ),

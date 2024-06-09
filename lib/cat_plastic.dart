@@ -60,10 +60,6 @@ class PlasticScreen extends StatelessWidget {
                     const Spacer(),
                     Align(
                       alignment: Alignment.center,
-                      child: Image.asset(
-                        'assets/plastic_type.png', // Ensure the asset path is correct.
-                        width: MediaQuery.of(context).size.width * 1.0,
-                      ),
                     ),
                   ],
                 ),

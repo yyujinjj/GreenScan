@@ -1,6 +1,6 @@
 import 'package:cap/login.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -51,14 +51,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Future<void> registerUser() async {
-    Map<String, String> headers = {'Content-Type': 'application/json'};
+    bool isReferrerValid =
+        await validateRecommenderCode(_recommenderController.text);
 
+    Map<String, String> headers = {'Content-Type': 'application/json'};
     Map<String, dynamic> body = {
       "email": _idController.text,
       "password": _passwordController.text,
       "confirmPassword": _retypePasswordController.text,
       "userName": _nameController.text,
-      "phoneNumber": _phoneNumberController.text
+      "phoneNumber": _phoneNumberController.text,
+      "referrerEmail": isReferrerValid ? _recommenderController.text : null
     };
 
     try {
@@ -67,19 +70,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           headers: headers,
           body: jsonEncode(body));
 
-      print(response.statusCode);
       if (response.statusCode == 200) {
-        print(response.body);
-        if (jsonDecode(response.body)["userEmail"].toString().isNotEmpty) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LoginScreen()));
-        }
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
-        print('Failed with status code: ${response.statusCode}');
+        print('Signup failed with status code: ${response.statusCode}');
         print('Reason: ${response.body}');
       }
     } catch (e) {
-      print('Error occurred: $e');
+      print('Error occurred during signup: $e');
     }
   }
 
@@ -232,11 +231,64 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  void validateRecommenderCode(String code) {
-    setState(() {
-      recommenderErrorText = (code.isEmpty || code == 'valid_code')
-          ? null
-          : "The recommender ID is incorrect. Try Again!";
-    });
+  Future<bool> validateRecommenderCode(String code) async {
+    if (code.isEmpty) {
+      setState(() {
+        recommenderErrorText = null;
+      });
+      return false;
+    }
+
+    try {
+      var validateResponse = await http.get(
+        Uri.parse(
+            'http://192.168.0.185:8090/api/user/validateReferrer?code=$code'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (validateResponse.statusCode == 200) {
+        bool isValid = jsonDecode(validateResponse.body)['isValid'];
+        if (isValid) {
+          // 추천인 코드가 유효하면, 마일리지 증가 API 호출
+          var rewardResponse = await http.post(
+              Uri.parse('http://192.168.0.185:8090/api/user/signup'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'referrerEmail': code}));
+          // 로그로 결과 확인
+          print(
+              "Reward status: ${rewardResponse.statusCode}, Body: ${rewardResponse.body}");
+        }
+
+        setState(() {
+          recommenderErrorText =
+              isValid ? null : "The recommender ID is incorrect. Try Again!";
+        });
+        return isValid;
+      } else {
+        setState(() {
+          recommenderErrorText = "Error checking code. Try again!";
+        });
+        return false;
+      }
+    } catch (e) {
+      setState(() {
+        recommenderErrorText = "Network error. Try again!";
+      });
+      return false;
+    }
+  }
+
+  Future<void> increaseReferrerMileage(String referrerEmail) async {
+    try {
+      var response = await http.post(
+          Uri.parse('http://192.168.0.185:8090/api/user/signup'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'referrerEmail': referrerEmail}));
+
+      print(
+          "Mileage increase response: ${response.statusCode} - ${response.body}");
+    } catch (e) {
+      print("Error increasing mileage: $e");
+    }
   }
 }

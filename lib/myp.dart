@@ -249,7 +249,7 @@ class _IdentityVerificationScreenState
                 TextField(
                   controller: _idController,
                   decoration: InputDecoration(
-                    labelText: "ID",
+                    labelText: "Email",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -371,9 +371,9 @@ class _EditPersonalInformationScreenState
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.green)),
-              _buildTextField(passwordController, 'Password', true),
-              _buildTextField(nameController, 'name', false),
-              _buildTextField(phoneController, 'Phone Number', false),
+              _buildTextField(passwordController, 'password', true),
+              _buildTextField(nameController, 'username', false),
+              _buildTextField(phoneController, 'phoneNumber', false),
               SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerRight,

@@ -664,9 +664,14 @@
 //     );
 //   }
 // }
+
+// import 'dart:js_interop_unsafe';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -719,12 +724,13 @@ class _AddMobileExchangeTicketPageState
         mainAxisSpacing: 20,
         children: <Widget>[
           buildExchangeItem(
-              context, 'assets/snack.png', '7,500P', 'Snack', '1'),
+              context, 'assets/snack.png', '7500', 'nacho', 1, true),
           buildExchangeItem(
-              context, 'assets/cookies.png', '5,000P', 'Cookies', '2'),
+              context, 'assets/cookies.png', '5000', 'choco-chip', 2, true),
           buildExchangeItem(
-              context, 'assets/chocolate.png', '3,500P', 'Chocolate', '3'),
-          buildExchangeItem(context, 'assets/gift.png', '8,000P', 'Gift', '4'),
+              context, 'assets/chocolate.png', '3500', 'Choco-bar', 3, true),
+          buildExchangeItem(
+              context, 'assets/gift.png', '8000', 'basket-chip', 4, true),
         ],
       ),
       floatingActionButton: Container(
@@ -751,11 +757,17 @@ class _AddMobileExchangeTicketPageState
     );
   }
 
-  Widget buildExchangeItem(BuildContext context, String imagePath, String price,
-      String itemName, String itemId) {
+  Widget buildExchangeItem(
+      BuildContext context,
+      String imagePath,
+      String exchangerTicketPrice,
+      String exchangerTicketName,
+      int exchangerTicketId,
+      bool confirm) {
     return GestureDetector(
       onTap: () {
-        showExchangeDialog(context, imagePath, itemName, price, itemId, false);
+        showExchangeDialog(context, imagePath, exchangerTicketPrice,
+            exchangerTicketName, exchangerTicketId, confirm);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -772,7 +784,7 @@ class _AddMobileExchangeTicketPageState
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(price,
+              child: Text(exchangerTicketPrice,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             ),
           ],
@@ -781,8 +793,13 @@ class _AddMobileExchangeTicketPageState
     );
   }
 
-  void showExchangeDialog(BuildContext context, String imagePath,
-      String itemName, String price, String itemId, bool incorrect) {
+  void showExchangeDialog(
+      BuildContext context,
+      String imagePath,
+      String exchangerTicketName,
+      String exchangerTicketPrice,
+      int exchangerTicketId,
+      bool confirm) {
     final TextEditingController _idController =
         TextEditingController(); // 이메일 입력
     final TextEditingController _passwordController =
@@ -806,7 +823,7 @@ class _AddMobileExchangeTicketPageState
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              if (incorrect)
+              if (confirm)
                 Text(
                   "Personal information was entered incorrectly.\nWould you like to re-enter? (${incorrectAttempts + 1}/5)",
                   style: TextStyle(color: Colors.red),
@@ -853,21 +870,24 @@ class _AddMobileExchangeTicketPageState
                 onPressed: () async {
                   String email = _idController.text;
                   String password = _passwordController.text;
+                  final prefs = await SharedPreferences.getInstance();
+                  String? token = prefs.getString('token');
 
                   // 서버로 인증 및 교환 요청 보내기
                   var response = await http.post(
                     Uri.parse('http://192.168.0.185:8090/exchanger/exchange'),
                     headers: <String, String>{
                       'Content-Type': 'application/json; charset=UTF-8',
+                      'Authorization': token ?? ''
                     },
                     body: jsonEncode(<String, dynamic>{
                       'email': email,
                       'password': password,
-                      'exchangerTicketId': int.parse(itemId),
+                      'exchangerTicketId': exchangerTicketId,
                       'confirm': true, // 서버측에서 요구할 수 있는 필드
                     }),
                   );
-
+                  print(response.body);
                   if (response.statusCode == 200) {
                     var jsonResponse = jsonDecode(response.body);
                     Navigator.of(context).pop();
@@ -879,8 +899,8 @@ class _AddMobileExchangeTicketPageState
                       incorrectAttempts++;
                     });
                     Navigator.of(context).pop();
-                    showExchangeDialog(
-                        context, imagePath, itemName, price, itemId, true);
+                    showExchangeDialog(context, imagePath, exchangerTicketName,
+                        exchangerTicketPrice, exchangerTicketId, true);
                   }
                 },
               ),

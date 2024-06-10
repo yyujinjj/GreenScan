@@ -44,7 +44,7 @@ class _CameraExampleState extends State<CameraExample> {
   Future<void> _uploadImage() async {
     if (_image == null) return;
     print('upload image');
-    final uri = Uri.parse('http://192.168.0.185:8090/api/user/uploadImage');
+    final uri = Uri.parse('http://192.168.0.76:8090/api/user/uploadImage');
     final request = http.MultipartRequest('POST', uri);
 
     final file = await http.MultipartFile.fromPath(

@@ -114,7 +114,7 @@ class MyPage extends StatelessWidget {
     }
 
     final url =
-        Uri.parse('http://192.168.0.185:8090/api/user/info'); // 백엔드 API URL
+        Uri.parse('http://192.168.0.76:8090/api/user/info'); // 백엔드 API URL
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': '$token', // Add token to headers
@@ -190,7 +190,7 @@ class _IdentityVerificationScreenState
   bool get isLockedOut => attemptCount >= 5;
 
   Future<void> _verifyIdentity() async {
-    final url = Uri.parse('http://192.168.0.185:8090/api/user/login');
+    final url = Uri.parse('http://192.168.0.76:8090/api/user/login');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
@@ -329,7 +329,7 @@ class _EditPersonalInformationScreenState
     }
 
     final url = Uri.parse(
-        'http://192.168.0.185:8090/api/user/update-profile'); // 백엔드 API URL
+        'http://192.168.0.76:8090/api/user/update-profile'); // 백엔드 API URL
 
     final headers = {
       'Content-Type': 'application/json',

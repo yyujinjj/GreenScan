@@ -66,7 +66,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     try {
       var response = await http.post(
-          Uri.parse('http://192.168.0.185:8090/api/user/signup'),
+          Uri.parse('http://192.168.0.76:8090/api/user/signup'),
           headers: headers,
           body: jsonEncode(body));
 
@@ -242,7 +242,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     try {
       var validateResponse = await http.get(
         Uri.parse(
-            'http://192.168.0.185:8090/api/user/validateReferrer?code=$code'),
+            'http://192.168.0.76:8090/api/user/validateReferrer?code=$code'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -251,7 +251,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         if (isValid) {
           // 추천인 코드가 유효하면, 마일리지 증가 API 호출
           var rewardResponse = await http.post(
-              Uri.parse('http://192.168.0.185:8090/api/user/signup'),
+              Uri.parse('http://192.168.0.76:8090/api/user/signup'),
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode({'referrerEmail': code}));
           // 로그로 결과 확인
@@ -281,7 +281,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future<void> increaseReferrerMileage(String referrerEmail) async {
     try {
       var response = await http.post(
-          Uri.parse('http://192.168.0.185:8090/api/user/signup'),
+          Uri.parse('http://192.168.0.76:8090/api/user/signup'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'referrerEmail': referrerEmail}));
 

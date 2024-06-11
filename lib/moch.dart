@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -80,7 +79,7 @@ class _AddMobileExchangeTicketPageState
           icon: Icon(Icons.arrow_back, color: Colors.black),
           label: Text('Go back', style: TextStyle(color: Colors.black)),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.of(context).pop();
           },
         ),
       ),

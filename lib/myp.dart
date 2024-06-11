@@ -79,6 +79,20 @@ class MyPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    //userData
+                    Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Text('Your Exchange Ticket Barcode:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 10),
+                        // Image.network(userData['exchangerTicket']),
+                        for (var index in userData['exchangerTicket'])
+                          // CustomWidget(index)
+                          Text('$index'),
+                      ],
+                    ),
                     SizedBox(height: 40),
                     Align(
                       alignment: Alignment.bottomLeft,
@@ -122,6 +136,7 @@ class MyPage extends StatelessWidget {
 
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load user data');

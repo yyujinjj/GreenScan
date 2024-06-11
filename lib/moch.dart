@@ -221,11 +221,13 @@ class _AddMobileExchangeTicketPageState
                   print(response.body);
                   if (response.statusCode == 200) {
                     var jsonResponse = jsonDecode(response.body);
+
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(jsonResponse['message'])),
                     );
                   } else {
+                    print("Failed to save barcode path"); // 로그 추가
                     setState(() {
                       incorrectAttempts++;
                     });

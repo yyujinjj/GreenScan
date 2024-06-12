@@ -31,10 +31,10 @@ class PlasticWasteScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.green[800]!, width: 3),
                   borderRadius: BorderRadius.circular(15.0),
@@ -60,31 +60,31 @@ class PlasticWasteScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 20), // Adjust the height for more space
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextButton.icon(
-                  icon: Icon(Icons.arrow_back, color: Colors.black54),
-                  label:
-                      Text('Go Back', style: TextStyle(color: Colors.black54)),
-                  onPressed: () {
-                    // Navigate back to MainScreen
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeScreen()),
-                    );
-                  },
+              SizedBox(height: 20), // Adjust the height for more space
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextButton.icon(
+                    icon: Icon(Icons.arrow_back, color: Colors.black54),
+                    label: Text('Go Back',
+                        style: TextStyle(color: Colors.black54)),
+                    onPressed: () {
+                      // Navigate back to MainScreen
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -91,9 +91,91 @@ class MyPage extends StatelessWidget {
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         SizedBox(height: 10),
                         // Image.network(userData['exchangerTicket']),
-                        for (var index in userData['exchangerTicket'])
-                          // CustomWidget(index)
-                          Text('$index'),
+                        Wrap(
+                          children: [
+                            for (var index in userData['exchangerTicket'])
+                              if (index.toString() == 'nacho')
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((_) {
+                                          return AlertDialog(
+                                            content: Image.asset(
+                                                'assets/small_snack_icon.png'),
+                                          );
+                                        }));
+                                  },
+                                  child: Image.asset(
+                                    'assets/small_snack_icon.png',
+                                    width:
+                                        MediaQuery.of(context).size.width / 6,
+                                    height:
+                                        MediaQuery.of(context).size.width / 6,
+                                  ),
+                                )
+                              else if (index.toString() == 'choco-bar')
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((_) {
+                                          return AlertDialog(
+                                            content: Image.asset(
+                                                'assets/small_chocolate_icon.png'),
+                                          );
+                                        }));
+                                  },
+                                  child: Image.asset(
+                                    'assets/small_chocolate_icon.png',
+                                    width:
+                                        MediaQuery.of(context).size.width / 6,
+                                    height:
+                                        MediaQuery.of(context).size.width / 6,
+                                  ),
+                                )
+                              else if (index.toString() == 'basket-chip')
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((_) {
+                                          return AlertDialog(
+                                            content: Image.asset(
+                                                'assets/small_gift_icon.png'),
+                                          );
+                                        }));
+                                  },
+                                  child: Image.asset(
+                                    'assets/small_gift_icon.png',
+                                    width:
+                                        MediaQuery.of(context).size.width / 6,
+                                    height:
+                                        MediaQuery.of(context).size.width / 6,
+                                  ),
+                                )
+                              else if (index.toString() == 'choco-chip')
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((_) {
+                                          return AlertDialog(
+                                            content: Image.asset(
+                                                'assets/small_cookie_icon.png'),
+                                          );
+                                        }));
+                                  },
+                                  child: Image.asset(
+                                    'assets/small_cookie_icon.png',
+                                    width:
+                                        MediaQuery.of(context).size.width / 6,
+                                    height:
+                                        MediaQuery.of(context).size.width / 6,
+                                  ),
+                                )
+                          ],
+                        )
                       ],
                     ),
                     SizedBox(height: 40),

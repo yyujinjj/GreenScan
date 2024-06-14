@@ -18,10 +18,4 @@
 - Unity
 - ...
 
-//## 설치
-//git clone <repository-url>
-//cd <repository-directory>
-//pip install -r requirements.txt
-
----
 ![image](https://github.com/yyujinjj/GreenScan/assets/142713364/55dcbd28-c219-48e6-960c-9fb4af369ac0)

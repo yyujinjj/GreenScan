@@ -1,10 +1,9 @@
-import 'package:cap/login.dart';
 import 'package:flutter/material.dart';
 import 'package:cap/cat_battery.dart' as battery_cat;
 import 'package:cap/cat_etc.dart' as etc_cat;
 import 'package:cap/cat_lamp.dart' as lamp_cat;
 import 'package:cap/cat_metal.dart' as metal_cat;
-import 'package:cap/moch.dart' as moch; // as 키워드를 사용하여 prefix 추가
+import 'package:cap/moch.dart' as moch;
 import 'package:cap/cat_can.dart' as can_cat;
 import 'package:cap/cat_paper.dart' as paper_cat;
 import 'package:cap/cat_plastic.dart' as plastic_cat;
@@ -12,27 +11,23 @@ import 'package:cap/cat_plasticwaste.dart' as plasticwaste_cat;
 import 'package:cap/cat_styrofoam.dart' as styrofoam_cat;
 import 'package:cap/cat_waste.dart' as waste_cat;
 import 'package:cap/was.dart';
-import 'package:cap/myp.dart' as myp; // as 키워드를 사용하여 prefix 추가
+import 'package:cap/myp.dart' as myp;
 import 'package:cap/camera.dart' as camera;
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyAppp extends StatelessWidget {
+  const MyAppp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Separate the Trash',
-      home: const LoginScreen(),
+      home: const HomeScreen(),
       routes: {
         '/camera': (context) => camera.CameraExample(),
         '/waste': (context) => waste_cat.WasteScreen(),
         '/plastic': (context) => plastic_cat.PlasticScreen(),
-        '/plastic waste': (context) => plasticwaste_cat.PlasticWasteScreen(),
+        '/plastic_waste': (context) => plasticwaste_cat.PlasticWasteScreen(),
         '/styrofoam': (context) => styrofoam_cat.StyrofoamScreen(),
         '/paper': (context) => paper_cat.PaperScreen(),
         '/can': (context) => can_cat.CanScreen(),
@@ -46,7 +41,6 @@ class MyApp extends StatelessWidget {
             moch.AddMobileExchangeTicketPage(),
         '/identityVerification': (context) =>
             myp.IdentityVerificationScreen(), // 추가된 라우트
-        // '/unity': (context) {},
       },
     );
   }
@@ -70,7 +64,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 20), // Extra space above "MY PAGE"
+          const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -82,7 +76,7 @@ class HomeScreen extends StatelessWidget {
             },
             child: const Text('MY PAGE'),
           ),
-          const SizedBox(height: 10), // Space below "MY PAGE"
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -101,9 +95,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/unity');
-                },
+                onTap: () {},
                 child: Container(
                   width: iconSize,
                   height: iconSize * 0.35,
@@ -130,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                 List<String> routes = [
                   '/waste',
                   '/plastic',
-                  '/plastic waste',
+                  '/plastic_waste',
                   '/styrofoam',
                   '/paper',
                   '/can',
@@ -181,15 +173,6 @@ class HomeScreen extends StatelessWidget {
                 child: const Text('LARGE WASTE'),
               ),
               const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.lightGreen,
-                  minimumSize: Size(buttonWidth, 50),
-                ),
-                onPressed: () {},
-                child: const Text('GAME'),
-              ),
             ],
           ),
           const SizedBox(height: 10),

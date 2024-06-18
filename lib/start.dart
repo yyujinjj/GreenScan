@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'signup.dart';
+import 'login.dart';
 
-void main() => runApp(const GreenscanApp());
+void main() => runApp(const MyApp());
 
-class GreenscanApp extends StatelessWidget {
-  const GreenscanApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +37,10 @@ class StartScreen extends StatelessWidget {
                 ClipOval(
                   child: Container(
                     color: Colors.green,
-                    height: 300.0, // Increased size
-                    width: 300.0, // Increased size
+                    height: 200.0,
+                    width: 200.0,
                     child: Center(
-                      child: Icon(
-                        Icons.delete_outline,
-                        size: 100.0, // Adjusted icon size
-                        color: Colors.white,
-                      ),
+                      child: Image.asset('assets/startlogo.png'),
                     ),
                   ),
                 ),
@@ -50,14 +48,14 @@ class StartScreen extends StatelessWidget {
                 const Text(
                   'Greenscan',
                   style: TextStyle(
-                    fontSize: 36.0, // Increased font size
+                    fontSize: 36.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Text(
                   'Helps with proper waste separation',
                   style: TextStyle(
-                    fontSize: 20.0, // Increased font size
+                    fontSize: 20.0,
                     color: Colors.grey,
                   ),
                 ),
@@ -70,10 +68,15 @@ class StartScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: OutlinedButton(
                           onPressed: () {
-                            // Implement sign-up logic
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegistrationScreen()),
+                            );
                           },
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.grey,
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.grey,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
@@ -83,7 +86,7 @@ class StartScreen extends StatelessWidget {
                             'Sign Up',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 20.0, // Increased font size
+                              fontSize: 20.0,
                             ),
                           ),
                         ),
@@ -94,10 +97,15 @@ class StartScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Implement login logic
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginScreen()),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.lightGreen,
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.lightGreen,
                             padding: const EdgeInsets.all(20.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
@@ -105,7 +113,7 @@ class StartScreen extends StatelessWidget {
                           ),
                           child: const Text(
                             'Login',
-                            style: TextStyle(fontSize: 20.0), // Increased font size
+                            style: TextStyle(fontSize: 20.0),
                           ),
                         ),
                       ),

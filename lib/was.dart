@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
 
 class CategorySelectionScreen extends StatelessWidget {
   final List<Category> categories = [
-    // Define your categories with additional disposalItems if necessary
     Category(
         name: 'Furniture',
         icon: Icons.chair,
@@ -129,7 +128,6 @@ class CategorySelectionScreen extends StatelessWidget {
         DisposalItem(name: 'Sketchbook', distinction: 'A3 size', fee: '500'),
       ],
     ),
-    // Add other categories following the same structure
   ];
 
   @override

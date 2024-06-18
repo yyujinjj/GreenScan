@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'mainscreen.dart'; // Make sure to import your MainScreen
+import 'mainscreen.dart';
 
 void main() => runApp(const MaterialApp(home: TrashSeparationApp()));
 
@@ -60,7 +59,7 @@ class BatteryScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20), // Adjust the height for more space
+              SizedBox(height: 20),
               Align(
                 alignment: Alignment.bottomLeft,
                 child: Container(
@@ -73,7 +72,6 @@ class BatteryScreen extends StatelessWidget {
                     label: Text('Go Back',
                         style: TextStyle(color: Colors.black54)),
                     onPressed: () {
-                      // Navigate back to MainScreen
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

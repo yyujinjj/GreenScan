@@ -90,7 +90,7 @@ class _PlayGameState extends State<PlayGame> {
   int score = 0;
   int maxWaste = 0;
   List<Waste> wastes = [];
-  double fallSpeed = 0.3; // Base fall speed in cm/s adjusted by level
+  double fallSpeed = 0.3;
 
   @override
   void initState() {
@@ -112,7 +112,7 @@ class _PlayGameState extends State<PlayGame> {
       dropPosition: position,
       fallSpeed: fallSpeed,
       screenHeight: MediaQuery.of(context).size.height,
-      iconData: Icons.delete, // Default icon, change as needed
+      iconData: Icons.delete,
     );
     setState(() {
       wastes.add(waste);
@@ -205,7 +205,7 @@ class Waste {
 
   void dropWaste({required Function onCatch, required Function onMiss}) {
     Timer.periodic(Duration(milliseconds: 50), (timer) {
-      verticalPosition += fallSpeed * 5; // Increase drop speed
+      verticalPosition += fallSpeed * 5;
 
       if (verticalPosition >= screenHeight - 70) {
         timer.cancel();

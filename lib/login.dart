@@ -3,7 +3,7 @@ import 'package:cap/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart'; // 추가된 부분
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,14 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
         print('로그인 성공');
         final token = response.headers['authorization'];
 
-        // 토큰 저장
         if (token != null) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
         }
 
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            context, MaterialPageRoute(builder: (context) => MyAppp()));
       } else {
         setState(() {
           _errorMessage = '로그인 실패: ${response.body}';
@@ -122,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   suffixIcon: const Icon(
                     Icons.error_outline,
                     color: Colors.red,
-                  ), // 에러 아이콘
+                  ),
                 ),
               ),
               if (_errorMessage != null)
@@ -137,15 +136,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
-                  backgroundColor: Colors.green, // 초록색 배경
+                  backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // 덜 둥근 모서리
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
                 onPressed: login,
                 child: const Text(
                   'Login',
-                  style: TextStyle(color: Colors.white), // 흰색 텍스트
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
@@ -160,11 +159,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: const [
                       TextSpan(
                         text: 'You don\'t have an account? Click ',
-                        style: TextStyle(color: Colors.grey), // 회색 텍스트
+                        style: TextStyle(color: Colors.grey),
                       ),
                       TextSpan(
                         text: 'Sign Up',
-                        style: TextStyle(color: Colors.green), // 초록색 텍스트
+                        style: TextStyle(color: Colors.green),
                       ),
                     ],
                   ),

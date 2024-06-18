@@ -50,8 +50,7 @@ class _CameraExampleState extends State<CameraExample> {
     final file = await http.MultipartFile.fromPath(
       'imageFile',
       _image!.path,
-      contentType:
-          MediaType('image', 'jpeg'), // Add this line if not already present
+      contentType: MediaType('image', 'jpeg'),
     );
 
     request.files.add(file);
@@ -82,30 +81,146 @@ class _CameraExampleState extends State<CameraExample> {
       appBar: AppBar(
         title: Text('Upload Image'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _image == null ? Text('No image selected.') : Image.file(_image!),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Take Image'),
-            ),
-            SizedBox(height: 20),
-            _labels == null
-                ? Text('No results.')
-                : Column(
-                    children: List.generate(_labels!.length, (index) {
-                      return Text(
-                        'Label: ${_labels![index]}, Confidence: ${_confidences![index]}',
-                        style: TextStyle(fontSize: 16),
-                      );
-                    }),
-                  ),
-          ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _image == null ? Text('No image selected.') : Image.file(_image!),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Take Image'),
+              ),
+              SizedBox(height: 20),
+              _labels == null
+                  ? Text('No results.')
+                  : Column(
+                      children: List.generate(_labels!.length, (index) {
+                        return Text(
+                          'Label: ${_labels![index]}, Confidence: ${_confidences![index]}',
+                          style: TextStyle(fontSize: 16),
+                        );
+                      }),
+                    ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:http_parser/http_parser.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: CameraExample(),
+//     );
+//   }
+// }
+
+// class CameraExample extends StatefulWidget {
+//   const CameraExample({Key? key}) : super(key: key);
+
+//   @override
+//   _CameraExampleState createState() => _CameraExampleState();
+// }
+
+// class _CameraExampleState extends State<CameraExample> {
+//   File? _image;
+//   List<dynamic>? _labels;
+//   List<dynamic>? _confidences;
+
+//   Future<void> _pickImage() async {
+//     final picker = ImagePicker();
+//     final pickedFile = await picker.pickImage(source: ImageSource.camera);
+//     if (pickedFile != null) {
+//       setState(() {
+//         _image = File(pickedFile.path);
+//       });
+//       await _uploadImage();
+//     } else {
+//       print('No image selected.');
+//     }
+//   }
+
+//   Future<void> _uploadImage() async {
+//     if (_image == null) return;
+//     print('Uploading image...');
+//     final uri = Uri.parse('http://15.165.10.11:8090/api/user/uploadImage');
+//     final request = http.MultipartRequest('POST', uri);
+
+//     final file = await http.MultipartFile.fromPath(
+//       'imageFile',
+//       _image!.path,
+//       contentType: MediaType('image', 'jpeg'),
+//     );
+
+//     request.files.add(file);
+
+//     try {
+//       final response = await request.send();
+//       final responseBody = await http.Response.fromStream(response);
+
+//       if (response.statusCode == 200) {
+//         print('Response body: ${responseBody.body}');
+//         final Map<String, dynamic> responseData =
+//             json.decode(responseBody.body);
+//         setState(() {
+//           _labels = responseData['labels'];
+//           _confidences = responseData['confidences'];
+//         });
+//       } else {
+//         print('Upload failed: ${responseBody.body}');
+//       }
+//     } catch (e) {
+//       print('Error occurred while uploading image: $e');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Upload Image'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             _image == null ? Text('No image selected.') : Image.file(_image!),
+//             SizedBox(height: 20),
+//             ElevatedButton(
+//               onPressed: _pickImage,
+//               child: Text('Take Image'),
+//             ),
+//             SizedBox(height: 20),
+//             _labels == null
+//                 ? Text('No results.')
+//                 : Column(
+//                     children: List.generate(_labels!.length, (index) {
+//                       return Text(
+//                         'Label: ${_labels![index]}, Confidence: ${_confidences![index]}',
+//                         style: TextStyle(fontSize: 16),
+//                       );
+//                     }),
+//                   ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

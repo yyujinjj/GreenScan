@@ -1,6 +1,5 @@
 import 'package:cap/login.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -66,13 +65,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     try {
       var response = await http.post(
-          Uri.parse('http://192.168.0.76:8090/api/user/signup'),
-          headers: headers,
-          body: jsonEncode(body));
+        Uri.parse('http://192.168.0.76:8090/api/user/signup'),
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       if (response.statusCode == 200) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
       } else {
         print('Signup failed with status code: ${response.statusCode}');
         print('Reason: ${response.body}');
@@ -249,31 +251,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (validateResponse.statusCode == 200) {
         bool isValid = jsonDecode(validateResponse.body)['isValid'];
         if (isValid) {
-          // 추천인 코드가 유효하면, 마일리지 증가 API 호출
-          var rewardResponse = await http.post(
-              Uri.parse('http://192.168.0.76:8090/api/user/signup'),
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode({'referrerEmail': code}));
-          // 로그로 결과 확인
-          print(
-              "Reward status: ${rewardResponse.statusCode}, Body: ${rewardResponse.body}");
+          await increaseReferrerMileage(code);
         }
 
-        setState(() {
-          recommenderErrorText =
-              isValid ? null : "The recommender ID is incorrect. Try Again!";
-        });
+        if (mounted) {
+          setState(() {
+            recommenderErrorText =
+                isValid ? null : "The recommender ID is incorrect. Try Again!";
+          });
+        }
         return isValid;
       } else {
-        setState(() {
-          recommenderErrorText = "Error checking code. Try again!";
-        });
+        if (mounted) {
+          setState(() {
+            recommenderErrorText = "Error checking code. Try again!";
+          });
+        }
         return false;
       }
     } catch (e) {
-      setState(() {
-        recommenderErrorText = "Network error. Try again!";
-      });
+      if (mounted) {
+        setState(() {
+          recommenderErrorText = "Network error. Try again!";
+        });
+      }
       return false;
     }
   }

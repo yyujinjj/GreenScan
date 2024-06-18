@@ -36,7 +36,7 @@ class AddMobileExchangeTicketPage extends StatefulWidget {
 
 class _AddMobileExchangeTicketPageState
     extends State<AddMobileExchangeTicketPage> {
-  int incorrectAttempts = 0;
+  Map<int, int> incorrectAttempts = {};
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +96,9 @@ class _AddMobileExchangeTicketPageState
       bool confirm) {
     return GestureDetector(
       onTap: () {
+        if (!incorrectAttempts.containsKey(exchangerTicketId)) {
+          incorrectAttempts[exchangerTicketId] = 0;
+        }
         showExchangeDialog(context, imagePath, exchangerTicketPrice,
             exchangerTicketName, exchangerTicketId, confirm);
       },
@@ -126,14 +129,12 @@ class _AddMobileExchangeTicketPageState
   void showExchangeDialog(
       BuildContext context,
       String imagePath,
-      String exchangerTicketName,
       String exchangerTicketPrice,
+      String exchangerTicketName,
       int exchangerTicketId,
       bool confirm) {
-    final TextEditingController _idController =
-        TextEditingController(); // 이메일 입력
-    final TextEditingController _passwordController =
-        TextEditingController(); // 비밀번호 입력
+    final TextEditingController _idController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
 
     showDialog(
       context: context,
@@ -150,47 +151,49 @@ class _AddMobileExchangeTicketPageState
                   textAlign: TextAlign.center),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (confirm)
-                Text(
-                  "Personal information was entered incorrectly.\nWould you like to re-enter? (${incorrectAttempts + 1}/5)",
-                  style: TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              if (incorrectAttempts < 5) ...[
-                SizedBox(height: 20),
-                TextField(
-                  controller: _idController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (confirm)
+                  Text(
+                    "Personal information was entered incorrectly.\nWould you like to re-enter? (${incorrectAttempts[exchangerTicketId]}/5)",
+                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
+                if (incorrectAttempts[exchangerTicketId]! < 5) ...[
+                  SizedBox(height: 20),
+                  TextField(
+                    controller: _idController,
+                    decoration: InputDecoration(
+                      labelText: 'ID',
+                      border: OutlineInputBorder(),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
                   ),
-                  obscureText: true,
-                ),
-              ] else
-                Text(
-                  "You have exceeded the maximum number of attempts.",
-                  style: TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-            ],
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                    obscureText: true,
+                  ),
+                ] else
+                  Text(
+                    "You have exceeded the maximum number of attempts.",
+                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+              ],
+            ),
           ),
           actions: <Widget>[
-            if (incorrectAttempts < 5)
+            if (incorrectAttempts[exchangerTicketId]! < 5)
               TextButton(
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -198,12 +201,11 @@ class _AddMobileExchangeTicketPageState
                 ),
                 child: Text('YES'),
                 onPressed: () async {
-                  String email = _idController.text;
+                  String id = _idController.text;
                   String password = _passwordController.text;
                   final prefs = await SharedPreferences.getInstance();
                   String? token = prefs.getString('token');
 
-                  // 서버로 인증 및 교환 요청 보내기
                   var response = await http.post(
                     Uri.parse('http://192.168.0.76:8090/exchanger/exchange'),
                     headers: <String, String>{
@@ -211,10 +213,10 @@ class _AddMobileExchangeTicketPageState
                       'Authorization': token ?? ''
                     },
                     body: jsonEncode(<String, dynamic>{
-                      'email': email,
+                      'id': id,
                       'password': password,
                       'exchangerTicketId': exchangerTicketId,
-                      'confirm': true, // 서버측에서 요구할 수 있는 필드
+                      'confirm': true,
                     }),
                   );
                   print(response.body);
@@ -226,13 +228,14 @@ class _AddMobileExchangeTicketPageState
                       SnackBar(content: Text(jsonResponse['message'])),
                     );
                   } else {
-                    print("Failed to save barcode path"); // 로그 추가
+                    print("Failed to save barcode path");
                     setState(() {
-                      incorrectAttempts++;
+                      incorrectAttempts[exchangerTicketId] =
+                          incorrectAttempts[exchangerTicketId]! + 1;
                     });
                     Navigator.of(context).pop();
-                    showExchangeDialog(context, imagePath, exchangerTicketName,
-                        exchangerTicketPrice, exchangerTicketId, true);
+                    showExchangeDialog(context, imagePath, exchangerTicketPrice,
+                        exchangerTicketName, exchangerTicketId, true);
                   }
                 },
               ),

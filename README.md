@@ -1,16 +1,73 @@
-# green
+![image](https://github.com/yyujinjj/GreenScan/assets/142713364/55dcbd28-c219-48e6-960c-9fb4af369ac0)
+# GreenScan
 
-A new Flutter project.
+## 1. 프로젝트 소개
 
-## Getting Started
+### 1.1 개요
+이 프로젝트는 이미지 인식 기술을 사용하여 사용자가 다양한 종류의 쓰레기를 식별하고 올바르게 처리할 수 있도록 도와주는 애플리케이션입니다. 분리 배출 방법에 대한 상세 정보를 제공하며, 쓰레기 처리 요청 지원 및 크기 측정 등의 기능을 제공합니다.
 
-This project is a starting point for a Flutter application.
+### 1.2 환경
+- 인터넷 연결이 되어있어야 함.
+- 안드로이드 11.0 OS이 실행되는 모바일 기기
+- iOS 13.0 이상이 실행되는 모바일 기기
 
-A few resources to get you started if this is your first Flutter project:
+### 1.3 프로그래밍 관련 내용
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**프로그래밍 언어**
+- Python: 데이터 처리, 모델 구현 및 Flask 서버 연동 (3.11.5)
+- Java: 백엔드 서버 개발 (JDK 17)
+- Dart: Flutter를 통한 프론트엔드 개발
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**툴**
+- MySQL: 데이터베이스 관리 (8.3.0)
+- OpenCV: 이미지 처리 및 컴퓨터 비전 (4.8.0)
+- PIL (Python Imaging Library): 이미지 처리 (10.0.1)
+
+**프레임워크**
+- Flutter: 모바일 애플리케이션 UI 개발
+- Spring Boot: Java 기반의 백엔드 서버 프레임워크
+- Flask: Python 기반, 모델 실행을 위한 프레임워크 (3.0.3)
+- YOLOv5: 객체 탐지 모델 (7.0)
+- PyTorch: 머신러닝 모델 구현 및 학습 (2.3)
+- AWS (Amazon Web Services): 서버 호스팅 및 클라우드 서비스, 어플의 배포를 위함 (2023.2)
+
+## 2. 주요 기능과 구성 요소
+
+### 2.1 카메라를 통한 객체 인식
+- 어플 내에서 카메라를 사용하여 실시간으로 객체를 캡처합니다.
+- 사용자가 특정 객체를 인식시키기 위해 카메라를 사용할 수 있습니다.
+
+### 2.2 이미지 전송
+- 캡처된 이미지는 Spring Boot 서버를 통해 Flask 서버로 전송됩니다.
+- 이 과정에서 이미지는 분석을 위해 준비됩니다.
+
+### 2.3 이미지 분석
+- Flask 서버에서는 PyTorch 모델을 사용하여 이미지를 분석합니다.
+- 이 모델은 학습된 pt파일을 사용하여 객체를 인식하고 분석합니다.
+
+### 2.4 결과 반환
+- 분석된 결과는 JSON 형식으로 반환됩니다.
+- JSON 데이터는 객체의 정확도와 라벨 값을 포함합니다.
+
+### 2.5 실시간 UI 표시
+- 반환된 JSON 데이터는 Spring Boot 서버를 통해 Flutter UI에 실시간으로 표시됩니다.
+- 사용자는 앱 내에서 분석 결과를 즉시 확인할 수 있습니다.
+
+### 2.6 라벨 확인
+- 모델이 인식한 객체의 종류는 `classes.txt` 파일에 정의된 라벨을 통해 확인됩니다.
+- 이 파일은 모델이 어떤 객체를 인식하는지에 대한 정보를 제공합니다.
+
+## 3. 기능
+- **이미지 인식**: 쓰레기의 종류를 식별하고 처리 지침 제공
+- **쓰레기 정보**: 다양한 쓰레기 종류에 대한 상세 카테고리
+- **쓰레기 처리 요청**: 사용자를 처리 서비스와 연결
+- **크기 측정**: 올바른 처리를 위한 쓰레기 크기 측정
+- **교환권 제공**: 사용자 확장을 위한 마일리지 사용 교환권 제공
+
+## 4. 작업 흐름 요약
+1. 사용자가 어플을 통해 객체를 인식시킵니다.
+2. 캡처된 이미지는 Spring Boot 서버로 전송됩니다.
+3. Spring Boot 서버는 이미지를 Flask 서버로 전달합니다.
+4. Flask 서버는 PyTorch 모델을 사용하여 이미지를 분석합니다.
+5. 분석 결과는 JSON 형태로 Spring Boot 서버를 통해 Flutter UI에 전달됩니다.
+6. 사용자에게 실시간으로 결과가 표시됩니다.
